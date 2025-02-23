@@ -37,22 +37,6 @@ const app = express();
 var users = [];
 
 app.use(express.json());
-app.post("/signup", (req, res) => {
-  var user = req.body;
-  let userAlreadyExists = false;
-  for (var i = 0; i < users.length; i++) {
-    if (users[i].email === user.email) {
-      userAlreadyExists = true;
-      break;
-    }
-  }
-  if (userAlreadyExists) {
-    res.sendStatus(400);
-  } else {
-    users.push(user);
-    res.status(201).send("Signup successful");
-  }
-});
 
 app.post("/signup", (req, res) => {
   //fetch req.body
