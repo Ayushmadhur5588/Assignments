@@ -29,6 +29,7 @@
   Testing the server - run `npm run test-authenticationServer` command in terminal
  */
 
+const e = require("express");
 const express = require("express");
 const PORT = 3000;
 const app = express();
@@ -49,54 +50,47 @@ app.post("/signup", (req, res) => {
     res.status(400).json({ message: "Username Already exists" });
   } else {
     ++id;
-    const newUser = {username , password, firstName, lastName, id};
+    const newUser = { username, password, firstName, lastName, id };
     users.push(newUser);
-    res.status(201).json({ message: "User Created", "id" : id });
+    res.status(201).json({ message: "User Created", id: id });
+  }
+});
+
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  const idx = users.findIndex(
+    (user) => user.username === username && user.password === password
+  );
+  if (idx === -1) {
+    res.status(401).json({ message: "Unauthorized" });
+  } else {
+    const { firstName, lastName, id } = users[idx];
+    res.status(200).json({ firstName, lastName, id });
   }
 });
 
 
-app.post('/login', (req, res) => {
-  const {username, password} = req.body;
-  const idx = users.findIndex((user) => user.username === username && user.password === password);
-  if(idx === -1){
-    res.status(401).json({"message" : "Unauthorized"});
-  }else{
-   const {firstName, lastName, id} = users[idx];
-   res.status(200).json({firstName ,lastName, id});
-  }
-})
-
 app.get("/data", (req, res) => {
-  var email = req.headers.email;
-  var password = req.headers.password;
-  let userFound = false;
-  for (var i = 0; i < users.length; i++) {
-    if (users[i].email === email && users[i].password === password) {
-      userFound = true;
-      break;
-    }
-  }
-
-  if (userFound) {
-    let usersToReturn = [];
-    for (let i = 0; i < users.length; i++) {
-      usersToReturn.push({
-        firstName: users[i].firstName,
-        lastName: users[i].lastName,
-        email: users[i].email,
-      });
-    }
-    res.json({
-      users,
-    });
+  const { username, password } = req.headers;
+  const idx = users.findIndex(
+    (user) => user.username === username && user.password === password
+  );
+  if (idx === -1) {
+    res.status(401).json({ message: "Unauthorized" });
   } else {
-    res.sendStatus(401);
+    const filterList = users.map((user) => {
+      return{
+        username : user.username,
+        firstName : user.firstName,
+        lastName : users.lastName
+      }
+    })
+    res.status(200).json({ users: filterList });
   }
 });
 
 app.listen(PORT, () => {
   console.log("Server Started");
-})
+});
 
 module.exports = app;
