@@ -35,6 +35,7 @@ const app = express();
 // write your logic here, DONT WRITE app.listen(3000) when you're running tests, the tests will automatically start the server
 
 var users = [];
+let id = 0;
 
 app.use(express.json());
 
@@ -47,31 +48,24 @@ app.post("/signup", (req, res) => {
   if (existingUser) {
     res.status(400).json({ message: "Username Already exists" });
   } else {
-    users.push(req.body);
-    res.status(201).json({ message: "User Created" });
+    ++id;
+    const newUser = {username , password, firstName, lastName, id};
+    users.push(newUser);
+    res.status(201).json({ message: "User Created", "id" : id });
   }
 });
 
-app.post("/login", (req, res) => {
-  var user = req.body;
-  let userFound = null;
-  for (var i = 0; i < users.length; i++) {
-    if (users[i].email === user.email && users[i].password === user.password) {
-      userFound = users[i];
-      break;
-    }
-  }
 
-  if (userFound) {
-    res.json({
-      firstName: userFound.firstName,
-      lastName: userFound.lastName,
-      email: userFound.email,
-    });
-  } else {
-    res.sendStatus(401);
+app.post('/login', (req, res) => {
+  const {username, password} = req.body;
+  const idx = users.findIndex((user) => user.username === username && user.password === password);
+  if(idx === -1){
+    res.status(401).json({"message" : "Unauthorized"});
+  }else{
+   const {firstName, lastName, id} = users[idx];
+   res.status(200).json({firstName ,lastName, id});
   }
-});
+})
 
 app.get("/data", (req, res) => {
   var email = req.headers.email;
@@ -100,5 +94,9 @@ app.get("/data", (req, res) => {
     res.sendStatus(401);
   }
 });
+
+app.listen(PORT, () => {
+  console.log("Server Started");
+})
 
 module.exports = app;
