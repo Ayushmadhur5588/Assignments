@@ -22,4 +22,24 @@ const path = require('path');
 const app = express();
 
 
+app.get('/files', (req, res) => {
+  const dir = path.join(__dirname, './files');
+  fs.readdir(dir, (err, files) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to retrieve files' });
+    }
+    res.json(files);
+  });
+});
+
+app.get('/files', (req, res) => {
+fs.readdir(path.join(__dirname, './files'),(err, files) => {
+  if(err){
+    return res.status(500).json({error : 'Failed to retrive files'});
+  }
+  res.json(files);
+})
+})
+
+
 module.exports = app;
