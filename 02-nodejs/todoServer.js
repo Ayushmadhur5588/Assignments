@@ -41,7 +41,7 @@
  */
 const express = require("express");
 const app = express();
-let todos = [];
+let todos = [], iD = 0;
 
 app.use(express.json());
 
@@ -59,7 +59,15 @@ app.get("/todos/:id", (req, res) => {
   }
 });
 
-app.post("/todos", (req, res) => {});
+app.post("/todos", (req, res) => {
+  const newObj = {
+    title : req.title,
+    description : req.description,
+    id : ++iD
+  }
+  todos.push(newObj);
+  res.status(201).json({id : iD});
+});
 
 app.put("/todos/:id", (req, res) => {});
 
