@@ -41,7 +41,8 @@
  */
 const express = require("express");
 const app = express();
-let todos = [], iD = 0;
+let todos = [],
+  iD = 0;
 
 app.use(express.json());
 
@@ -52,26 +53,47 @@ app.get("/todos", (req, res) => {
 app.get("/todos/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const todo = todos.find((todo) => todo.id === id);
-  if(todo){
+  if (todo) {
     res.json(todo);
-  }else{
-    res.status(404).json({message : "Not found"});
+  } else {
+    res.status(404).json({ message: "Not found" });
   }
 });
 
 app.post("/todos", (req, res) => {
   const newObj = {
-    title : req.title,
-    description : req.description,
-    id : ++iD
-  }
+    title: req.title,
+    description: req.description,
+    id: ++iD,
+  };
   todos.push(newObj);
-  res.status(201).json({id : iD});
+  res.status(201).json({ id: iD });
 });
 
-app.put("/todos/:id", (req, res) => {});
+app.put("/todos/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const { title, description } = req.body; 
 
-app.delete("/todos/:id", (req, res) => {});
+  const idx = todos.findIndex((todo) => todo.id === id);
+  if (idx == -1) {
+    res.status(404).json({ message: "Not found" });
+  } else {
+    if (title !== undefined) todos[idx].title = title;
+    if (description !== undefined) todos[idx].description = description;
+    res.json({ message: "Updated Success" });
+  }
+});
+
+app.delete("/todos/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const exist = todos.some((todo) => todo.id === id);
+  if (!exist) {
+    res.status(404).json({ message: "Not Found" });
+  } else {
+    todos = todos.filter((todo) => todo.id !== id);
+    res.json({ message: "Deleted Successfully" });
+  }
+});
 
 app.listen(3000, () => {
   console.log("Server Started");
