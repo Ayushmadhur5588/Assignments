@@ -41,12 +41,23 @@
  */
 const express = require("express");
 const app = express();
+let todos = [];
 
 app.use(express.json());
 
-app.get("/todos", (req, res) => {});
+app.get("/todos", (req, res) => {
+  res.json(todos);
+});
 
-app.get("/todos/:id", (req, res) => {});
+app.get("/todos/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const todo = todos.find((todo) => todo.id === id);
+  if(todo){
+    res.json(todo);
+  }else{
+    res.status(404).json({message : "Not found"});
+  }
+});
 
 app.post("/todos", (req, res) => {});
 
