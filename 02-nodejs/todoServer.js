@@ -41,11 +41,12 @@
  */
 const express = require("express");
 const app = express();
+const cors = require('cors');
 let todos = [],
   iD = 0;
 
 app.use(express.json());
-
+app.use(cors());
 app.get("/todos", (req, res) => {
   res.json(todos);
 });
@@ -62,8 +63,8 @@ app.get("/todos/:id", (req, res) => {
 
 app.post("/todos", (req, res) => {
   const newObj = {
-    title: req.title,
-    description: req.description,
+    title: req.body.title,
+    description: req.body.description,
     id: ++iD,
   };
   todos.push(newObj);
